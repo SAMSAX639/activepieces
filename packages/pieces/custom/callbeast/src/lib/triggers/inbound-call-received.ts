@@ -4,7 +4,7 @@ import {
   Property,
 } from '@activepieces/pieces-framework';
 import axios from 'axios';
-import { Campaign, Auth } from '../types';
+import { Campaign, Auth, BaseURL } from '../types';
 
 export const inboundCallReceived = createTrigger({
   // auth: check https://www.activepieces.com/docs/developers/piece-reference/authentication,
@@ -21,7 +21,7 @@ export const inboundCallReceived = createTrigger({
       options: async ({ auth }, { searchValue }) => {
         const { auth_key, user_id } = auth as Auth;
         const response: { data: { campaigns: Campaign[] } } = await axios.get(
-          `https://callbeast.com/api/activepieces/campaign?userId=${user_id}`,
+          `${BaseURL}/campaign?userId=${user_id}`,
           {
             headers: {
               Authorization: `Bearer ${auth_key}`,
@@ -41,13 +41,13 @@ export const inboundCallReceived = createTrigger({
       },
     }),
   },
-  sampleData: { from: '1234567890', to: '0987654321' },
+  sampleData: { from: '+1234567890', to: '+0987654321' },
   type: TriggerStrategy.WEBHOOK,
   async onEnable(context) {
     // implement webhook creation logic
     const { auth_key } = context.auth as Auth;
     await axios.post(
-      `https://callbeast.com/api/activepieces/campaign`,
+      `${BaseURL}/campaign`,
       { wenhook: context.webhookUrl, campaignId: context.propsValue.campaign, triggerType: 'inwardCall' },
       {
         headers: {
@@ -60,7 +60,7 @@ export const inboundCallReceived = createTrigger({
     // implement webhook deletion logic
     const { auth_key } = context.auth as Auth;
     await axios.delete(
-      `https://callbeast.com/api/activepieces/campaign?campaignId=${context.propsValue.campaign}&triggerType=inwardCall`,
+      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&triggerType=inwardCall`,
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,

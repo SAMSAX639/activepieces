@@ -1,5 +1,5 @@
 import { createAction, Property } from '@activepieces/pieces-framework';
-import { Auth, Campaign } from '../types';
+import { Auth, Campaign, BaseURL } from '../types';
 import axios from 'axios';
 
 export const addLeadToCampaign = createAction({
@@ -17,7 +17,7 @@ export const addLeadToCampaign = createAction({
       options: async ({ auth }, { searchValue }) => {
         const { auth_key, user_id } = auth as Auth;
         const response: { data: { campaigns: Campaign[] } } = await axios.get(
-          `https://callbeast.com/api/activepieces/campaign?userId=${user_id}&type=${'OUTWARD'}`,
+          `${BaseURL}/campaign?userId=${user_id}&type=${'OUTWARD'}`,
           {
             headers: {
               Authorization: `Bearer ${auth_key}`,
@@ -68,7 +68,7 @@ export const addLeadToCampaign = createAction({
     const { auth_key, user_id } = context.auth as Auth;
     const props = context.propsValue;
     await axios.post(
-      `https://callbeast.com/api/activepieces/lead`,
+      `${BaseURL}/lead`,
       {
         lead: {
           phoneNumber: props.phoneNumber,
