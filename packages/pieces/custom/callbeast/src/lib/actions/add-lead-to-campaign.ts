@@ -63,7 +63,28 @@ export const addLeadToCampaign = createAction({
       required: false,
     }),
   },
-  async run() {
+  async run(context) {
     // Action logic here
+    const { auth_key, user_id } = context.auth as Auth;
+    const props = context.propsValue;
+    await axios.post(
+      `https://callbeast.com/api/activepieces/lead`,
+      {
+        lead: {
+          phoneNumber: props.phoneNumber,
+          name: props.customerName,
+          email: props.customerEmail,
+          variables: props.variables,
+        },
+        campaignId: props.campaign,
+        userId: user_id,
+        allowDuplicate: props.allowDuplicates,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${auth_key}`,
+        },
+      }
+    );
   },
 });
