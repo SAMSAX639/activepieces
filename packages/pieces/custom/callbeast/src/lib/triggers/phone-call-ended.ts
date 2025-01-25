@@ -4,7 +4,7 @@ import {
   Property,
 } from '@activepieces/pieces-framework';
 import axios from 'axios';
-import { Campaign, Auth } from '../types';
+import { Campaign, Auth, BaseURL } from '../types';
 
 export const phoneCallEnded = createTrigger({
   // auth: check https://www.activepieces.com/docs/developers/piece-reference/authentication,
@@ -21,7 +21,7 @@ export const phoneCallEnded = createTrigger({
       options: async ({ auth }, { searchValue }) => {
         const { auth_key, user_id } = auth as Auth;
         const response: { data: { campaigns: Campaign[] } } = await axios.get(
-          `https://callbeast.com/api/activepieces/campaign?userId=${user_id}&type=${'OUTWARD'}`,
+          `${BaseURL}/campaign?userId=${user_id}`,
           {
             headers: {
               Authorization: `Bearer ${auth_key}`,
@@ -41,13 +41,43 @@ export const phoneCallEnded = createTrigger({
       },
     }),
   },
-  sampleData: { id: 'campaign-id', name: 'Campaign Name' },
+  sampleData: {
+    "status": "COMPLETED",
+    "duration": 120,
+    "transcript": [
+      {
+        "message": "Hi! How are you, John?",
+        "role": "agent",
+      },
+      {
+        "message": "Im fine. How about you?",
+        "role": "user",
+      },
+      {
+        "message": "Im doing well, thank you for asking.",
+        "role": "agent",
+      },
+      {
+        "message": "How can I assist you today?",
+        "role": "user",
+      }
+    ],
+    "customer_phone": "+16380991171",
+    "campaign_phone": "+16380991171",
+    "input_variables": {
+      "customer_name": "John"
+    },
+    "extracted_variables": {
+      "status": false,
+      "summary": "Call ended without clear objective being met."
+    }
+  },
   type: TriggerStrategy.WEBHOOK,
   async onEnable(context) {
     // implement webhook creation logic
     const { auth_key } = context.auth as Auth;
     await axios.post(
-      `https://callbeast.com/api/activepieces/campaign`,
+      `${BaseURL}/campaign`,
       { wenhook: context.webhookUrl, campaignId: context.propsValue.campaign, triggerType: 'phoneCallEnded' },
       {
         headers: {
@@ -60,7 +90,7 @@ export const phoneCallEnded = createTrigger({
     // implement webhook deletion logic
     const { auth_key } = context.auth as Auth;
     await axios.delete(
-      `https://callbeast.com/api/activepieces/campaign?campaignId=${context.propsValue.campaign}&triggerType=phoneCallEnded`,
+      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&triggerType=phoneCallEnded`,
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,
