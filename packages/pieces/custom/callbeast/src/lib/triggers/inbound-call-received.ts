@@ -48,7 +48,11 @@ export const inboundCallReceived = createTrigger({
     const { auth_key } = context.auth as Auth;
     await axios.post(
       `${BaseURL}/campaign`,
-      { wenhook: context.webhookUrl, campaignId: context.propsValue.campaign, triggerType: 'inwardCall' },
+      {
+        webhook: context.webhookUrl,
+        campaignId: context.propsValue.campaign,
+        triggerType: 'inwardCall',
+      },
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,

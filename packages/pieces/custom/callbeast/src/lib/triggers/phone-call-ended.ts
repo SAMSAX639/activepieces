@@ -42,35 +42,35 @@ export const phoneCallEnded = createTrigger({
     }),
   },
   sampleData: {
-    "status": "COMPLETED",
-    "duration": 120,
-    "transcript": [
+    status: 'COMPLETED',
+    duration: 120,
+    transcript: [
       {
-        "message": "Hi! How are you, John?",
-        "role": "agent",
+        message: 'Hi! How are you, John?',
+        role: 'agent',
       },
       {
-        "message": "Im fine. How about you?",
-        "role": "user",
+        message: 'Im fine. How about you?',
+        role: 'user',
       },
       {
-        "message": "Im doing well, thank you for asking.",
-        "role": "agent",
+        message: 'Im doing well, thank you for asking.',
+        role: 'agent',
       },
       {
-        "message": "How can I assist you today?",
-        "role": "user",
-      }
+        message: 'How can I assist you today?',
+        role: 'user',
+      },
     ],
-    "customer_phone": "+16380991171",
-    "campaign_phone": "+16380991171",
-    "input_variables": {
-      "customer_name": "John"
+    customer_phone: '+16380991171',
+    campaign_phone: '+16380991171',
+    input_variables: {
+      customer_name: 'John',
     },
-    "extracted_variables": {
-      "status": false,
-      "summary": "Call ended without clear objective being met."
-    }
+    extracted_variables: {
+      status: false,
+      summary: 'Call ended without clear objective being met.',
+    },
   },
   type: TriggerStrategy.WEBHOOK,
   async onEnable(context) {
@@ -78,7 +78,11 @@ export const phoneCallEnded = createTrigger({
     const { auth_key } = context.auth as Auth;
     await axios.post(
       `${BaseURL}/campaign`,
-      { wenhook: context.webhookUrl, campaignId: context.propsValue.campaign, triggerType: 'phoneCallEnded' },
+      {
+        webhook: context.webhookUrl,
+        campaignId: context.propsValue.campaign,
+        triggerType: 'phoneCallEnded',
+      },
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,
