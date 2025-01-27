@@ -8,4 +8,4 @@ export type Auth = {
   user_id: string;
 };
 
-export const BaseURL = "https://callbeast.com/api/activepieces"
+export const BaseURL = 'https://callbeast.com/api/activepieces';
