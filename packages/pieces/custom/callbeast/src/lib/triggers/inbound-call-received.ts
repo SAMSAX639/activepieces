@@ -2,6 +2,7 @@ import {
   createTrigger,
   TriggerStrategy,
   Property,
+  StoreScope
 } from '@activepieces/pieces-framework';
 import axios from 'axios';
 import { Campaign, Auth, BaseURL } from '../types';
@@ -46,12 +47,12 @@ export const inboundCallReceived = createTrigger({
   async onEnable(context) {
     // implement webhook creation logic
     const { auth_key } = context.auth as Auth;
-    await axios.post(
+    const response = await axios.post(
       `${BaseURL}/campaign`,
       {
         webhook: context.webhookUrl,
         campaignId: context.propsValue.campaign,
-        triggerType: 'inwardCall',
+        triggerType: 'INWARD_CALL',
       },
       {
         headers: {
@@ -59,18 +60,21 @@ export const inboundCallReceived = createTrigger({
         },
       }
     );
+    context.store.put('icWebhookId', response.data.webhookId, StoreScope.FLOW);
   },
   async onDisable(context) {
     // implement webhook deletion logic
     const { auth_key } = context.auth as Auth;
+    const webhookId = context.store.get('icWebhookId', StoreScope.FLOW);
     await axios.delete(
-      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&triggerType=inwardCall`,
+      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&webhookId=${webhookId}`,
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,
         },
       }
     );
+    context.store.delete('icWebhookId', StoreScope.FLOW);
   },
   async run(context) {
     return [context.payload.body];
