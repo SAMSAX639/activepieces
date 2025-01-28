@@ -60,12 +60,12 @@ export const inboundCallReceived = createTrigger({
         },
       }
     );
-    context.store.put('icWebhookId', response.data.webhookId, StoreScope.FLOW);
+    await context.store.put('icWebhookId', response.data.webhookId, StoreScope.FLOW);
   },
   async onDisable(context) {
     // implement webhook deletion logic
     const { auth_key } = context.auth as Auth;
-    const webhookId = context.store.get('icWebhookId', StoreScope.FLOW);
+    const webhookId = await context.store.get('icWebhookId', StoreScope.FLOW);
     await axios.delete(
       `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&webhookId=${webhookId}`,
       {
@@ -74,7 +74,7 @@ export const inboundCallReceived = createTrigger({
         },
       }
     );
-    context.store.delete('icWebhookId', StoreScope.FLOW);
+    await context.store.delete('icWebhookId', StoreScope.FLOW);
   },
   async run(context) {
     return [context.payload.body];

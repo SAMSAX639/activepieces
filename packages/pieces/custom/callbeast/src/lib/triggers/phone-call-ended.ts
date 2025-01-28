@@ -90,11 +90,11 @@ export const phoneCallEnded = createTrigger({
         },
       }
     );
-    context.store.put('pceWebhookId', response.data.webhookId, StoreScope.FLOW);
+    await context.store.put('pceWebhookId', response.data.webhookId, StoreScope.FLOW);
   },
   async onDisable(context) {
     // implement webhook deletion logic
-    const webhookId = context.store.get('pceWebhookId', StoreScope.FLOW);
+    const webhookId = await context.store.get('pceWebhookId', StoreScope.FLOW);
     const { auth_key } = context.auth as Auth;
     await axios.delete(
       `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&webhookId=${webhookId}`,
@@ -104,7 +104,7 @@ export const phoneCallEnded = createTrigger({
         },
       }
     );
-    context.store.delete('pceWebhookId', StoreScope.FLOW);
+    await context.store.delete('pceWebhookId', StoreScope.FLOW);
   },
   async run(context) {
     return [context.payload.body];
