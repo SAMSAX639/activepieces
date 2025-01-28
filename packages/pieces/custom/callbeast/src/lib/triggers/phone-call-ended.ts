@@ -2,6 +2,7 @@ import {
   createTrigger,
   TriggerStrategy,
   Property,
+  StoreScope,
 } from '@activepieces/pieces-framework';
 import axios from 'axios';
 import { Campaign, Auth, BaseURL } from '../types';
@@ -76,12 +77,12 @@ export const phoneCallEnded = createTrigger({
   async onEnable(context) {
     // implement webhook creation logic
     const { auth_key } = context.auth as Auth;
-    await axios.post(
+    const response = await axios.post(
       `${BaseURL}/campaign`,
       {
         webhook: context.webhookUrl,
         campaignId: context.propsValue.campaign,
-        triggerType: 'phoneCallEnded',
+        triggerType: 'PHONE_CALL_ENDED',
       },
       {
         headers: {
@@ -89,18 +90,21 @@ export const phoneCallEnded = createTrigger({
         },
       }
     );
+    context.store.put('pceWebhookId', response.data.webhookId, StoreScope.FLOW);
   },
   async onDisable(context) {
     // implement webhook deletion logic
+    const webhookId = context.store.get('pceWebhookId', StoreScope.FLOW);
     const { auth_key } = context.auth as Auth;
     await axios.delete(
-      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&triggerType=phoneCallEnded`,
+      `${BaseURL}/campaign?campaignId=${context.propsValue.campaign}&webhookId=${webhookId}`,
       {
         headers: {
           Authorization: `Bearer ${auth_key}`,
         },
       }
     );
+    context.store.delete('pceWebhookId', StoreScope.FLOW);
   },
   async run(context) {
     return [context.payload.body];
