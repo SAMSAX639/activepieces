@@ -71,6 +71,9 @@ export const phoneCallEnded = createTrigger({
     extracted_variables: {
       status: false,
       summary: 'Call ended without clear objective being met.',
+      data_collected: {
+        email: 'john@doe.com',
+      },
     },
   },
   type: TriggerStrategy.WEBHOOK,
